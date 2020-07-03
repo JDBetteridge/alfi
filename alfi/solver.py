@@ -45,7 +45,7 @@ class NavierStokesSolver(object):
 
     def residual(self):
         raise NotImplementedError
-    
+
     def update_wind(self, z):
         raise NotImplementedError
 
@@ -132,14 +132,14 @@ class NavierStokesSolver(object):
 
         mesh = mh[-1]
         uviss = []
- 
+
         self.mesh = mesh
         self.load_balance(mesh)
         Z = self.function_space(mesh, k)
         self.Z = Z
         comm = mesh.mpi_comm()
         if False:#comm.size == 1:
-            visbase = firedrake.Mesh(mesh._plex.clone(), dim=mesh.ufl_cell().geometric_dimension(),
+            visbase = firedrake.Mesh(mesh._topology_dm.clone(), dim=mesh.ufl_cell().geometric_dimension(),
                                      distribution_parameters=problem.distribution_parameters,
                                      reorder=True)
             vismh = MeshHierarchy(visbase, nref_vis)
@@ -502,7 +502,7 @@ class NavierStokesSolver(object):
 
         if self.solver_type == "lu":
             outer = {**outer_base, **outer_lu}
-        elif self.solver_type == "simple": 
+        elif self.solver_type == "simple":
             outer = {**outer_base, **outer_simple}
         elif self.solver_type == "lsc":
             outer = {**outer_base, **outer_lsc}
