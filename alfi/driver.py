@@ -45,6 +45,7 @@ def get_default_parser():
     parser.add_argument("--high-accuracy", dest="high_accuracy", default=False,
                         action="store_true")
     parser.add_argument("--smoothing", type=int, default=None)
+    parser.add_argument("--telescope-factor", type=int, default=1)
     return parser
 
 
@@ -70,6 +71,7 @@ def get_solver(args, problem, hierarchy_callback=None):
         rebalance_vertices=args.rebalance,
         high_accuracy=args.high_accuracy,
         hierarchy_callback=hierarchy_callback,
+        telescope_factor=args.telescope_factor
     )
     return solver
 

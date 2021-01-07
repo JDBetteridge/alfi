@@ -59,7 +59,8 @@ class NavierStokesSolver(object):
                  patch_composition="additive", restriction=False, smoothing=None,
                  rebalance_vertices=False,
                  hierarchy_callback=None,
-                 high_accuracy=False
+                 high_accuracy=False,
+                 telescope_factor=1
                  ):
 
         assert solver_type in {"almg", "allu", "lu", "simple", "lsc"}, "Invalid solver type %s" % solver_type
@@ -82,6 +83,7 @@ class NavierStokesSolver(object):
         self.restriction = restriction
         self.smoothing = smoothing
         self.high_accuracy = high_accuracy
+        self.telescope_factor = telescope_factor
 
         def rebalance(dm, i):
             if rebalance_vertices:
@@ -351,11 +353,6 @@ class NavierStokesSolver(object):
             "mat_mumps_icntl_14": 150,
         }
 
-        size = self.mesh.mpi_comm().size
-        if size > 24:
-            telescope_factor = round(size/24.0)
-        else:
-            telescope_factor = 1
         fieldsplit_0_mg = {
             "ksp_type": "richardson",
             "ksp_richardson_self_scale": False,
@@ -371,7 +368,7 @@ class NavierStokesSolver(object):
             "mg_coarse_assembled": {
                 "mat_type": "aij",
                 "pc_type": "telescope",
-                "pc_telescope_reduction_factor": telescope_factor,
+                "pc_telescope_reduction_factor": self.telescope_factor,
                 "pc_telescope_subcomm_type": "contiguous",
                 "telescope_pc_type": "lu",
                 "telescope_pc_factor_mat_solver_type": "superlu_dist",
